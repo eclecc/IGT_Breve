@@ -1,5 +1,5 @@
 let lastTimestamp = null; // Variable global para guardar el timestamp anterior
-let profit = 2000;
+let profit = 1000;
 let results = [];
 let trialCount = 0;
 lastTimestamp = Date.now(); // no-inicializar con el timestamp actuallet lastTimestamp = Date.now(); // Inicializar con el timestamp actual
