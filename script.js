@@ -1,3 +1,5 @@
+let lastTimestamp = null; // Variable global para guardar el timestamp anterior
+
 let profit = 1000;
 let results = [];
 let trialCount = 0;
@@ -15,6 +17,11 @@ const deckD = [50, 50, 50, 50, 50, 50, 50, 50, 50, -200, 50, 50, 50, 50, 50, 50,
 //const deckD = [0, 50, 0, 50, 50, 0, 0, 50, 50, -250, 0, 0, 50, 50, 0, 50, 50, 50, 0, -250, 50, 0, 50, 50, 0, 0, 0, 50, -250, 50, 50, 0, 50, 0, -250, 0, 50, 50, 0, 50]; // Continue the sequence for 40 cards
 
 function drawCard(deckName) {
+    const currentTimestamp = Date.now(); // Capturamos el timestamp actual
+    const responseTime = lastTimestamp ? currentTimestamp - lastTimestamp : 0; // Calculamos el tiempo de respuesta (TR)
+    lastTimestamp = currentTimestamp; // Actualizamos el timestamp anterior
+    
+    
     if (trialCount >= maxTrials) {
         alert("Maximum trials reached!");
         return;
@@ -64,44 +71,72 @@ function drawCard(deckName) {
 
 function computeNetScores() {
     let netScores = [];
+    let averageTRs = []; // Array para almacenar los tiempos de respuesta medios por bloque
+    let totalTR = 0; // Para calcular el TR promedio total
+    let totalTRCount = 0; // Contador de intentos totales para calcular la media
+    let totalNetScore = 0; // Para calcular el Netscore total
+
     for (let i = 0; i < maxTrials; i += 20) {
         let block = results.slice(i, i + 20);
-        let netScore = block.reduce((score, record) => {
-            if (['C','D'].includes(record.deck)) score++; // Advantageous
-            if (['A','B'].includes(record.deck)) score--; // Disadvantageous
-            return score;
-        }, 0);
+        let netScore = 0;
+        let blockTRSum = 0; // Suma de los TRs en este bloque
+        let blockCount = block.length; // Número de intentos en este bloque
+
+        block.forEach(record => {
+            if (['C', 'D'].includes(record.deck)) netScore++; // Ventajoso
+            if (['A', 'B'].includes(record.deck)) netScore--; // Desventajoso
+            blockTRSum += record.TR; // Sumar el TR del intento
+        });
+
+        totalNetScore += netScore; // Incrementar el Netscore total
+        totalTR += blockTRSum; // Incrementar la suma total de TRs
+        totalTRCount += blockCount; // Incrementar el número total de intentos
+
         netScores.push(netScore);
+        averageTRs.push(blockCount > 0 ? blockTRSum / blockCount : 0); // Calcular TR medio del bloque
     }
-    displayNetScores(netScores);
-    return netScores;
+
+    const averageTRTotal = totalTRCount > 0 ? totalTR / totalTRCount : 0; // TR promedio total
+
+    displayNetScores(netScores, averageTRs, totalNetScore, averageTRTotal);
+    return { netScores, averageTRs, totalNetScore, averageTRTotal };
 }
 
-function displayNetScores(netScores) {
-    setTimeout(function() {alert("Net Scores for each block:\n" + netScores.map((score, index) => `Block ${index + 1}: ${score}`).join("\n"))}, 100);
+function displayNetScores(netScores, averageTRs, totalNetScore, averageTRTotal) {
+    let message = "Net Scores for each block:\n";
+    netScores.forEach((score, index) => {
+        message += `Block ${index + 1}: Net Score = ${score}, Avg TR = ${averageTRs[index].toFixed(2)} ms\n`;
+    });
+    message += `\nTotal Net Score: ${totalNetScore}\n`;
+    message += `Average TR (Total): ${averageTRTotal.toFixed(2)} ms`;
+
+    setTimeout(() => alert(message), 100);
 }
 
 function downloadCSV() {
     var userId = generateStringRandomly();
     let csvContent = "data:text/csv;charset=utf-8,";
-    let netScores = computeNetScores();
+    const { netScores, averageTRs, totalNetScore, averageTRTotal } = computeNetScores();
 
     // Header for individual results
-    csvContent += "Deck,Result,Total Profit\n";
+    csvContent += "Deck,Result,Total Profit,Timestamp,TR (ms)\n";
     results.forEach(record => {
-        csvContent += record.deck + "," + record.result + "," + record.profit + "\n";
+        csvContent += record.deck + "," + record.result + "," + record.profit + "," +
+                      new Date(record.timestamp).toISOString() + "," + record.TR + "\n";
     });
 
     // Add a separator for clarity
     csvContent += "\n\n";
 
     // Header for block totals and net scores
-    csvContent += "Block,Net Score\n";
-
-    // Add net score for each block
+    csvContent += "Block,Net Score,Avg TR (ms)\n";
     for (let j = 0; j < netScores.length; j++) {
-        csvContent += `Block ${j + 1},${netScores[j]}\n`;
+        csvContent += `Block ${j + 1},${netScores[j]},${averageTRs[j].toFixed(2)}\n`;
     }
+
+    // Add total values
+    csvContent += "\nTotal Net Score," + totalNetScore + "\n";
+    csvContent += "Average TR (Total)," + averageTRTotal.toFixed(2) + " ms\n";
 
     let encodedUri = encodeURI(csvContent);
     let link = document.createElement("a");
