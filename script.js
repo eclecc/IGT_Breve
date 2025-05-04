@@ -62,10 +62,17 @@ function drawCard(deckName) {
 
         // Mostramos los resultados desglosados
         let resultSpan = document.getElementById('resultValue');
-        resultSpan.innerHTML = `
-            <span class="gain">Ganado: €${ganado}</span> 
-            <span class="loss">Perdido: €${perdido}</span>
-        `;
+        
+        if (ganado > 0 && perdido > 0) {
+            resultSpan.innerHTML = `
+                <span class="gain">Ganado: €${ganado}</span> 
+                <span class="loss">Perdido: €${perdido}</span>
+            `;
+        } else if (ganado > 0) {
+            resultSpan.innerHTML = `<span class="gain">Ganado: €${ganado}</span>`;
+        } else if (perdido > 0) {
+            resultSpan.innerHTML = `<span class="loss">Perdido: €${perdido}</span>`;
+        }
     }
 
     profit += result;
