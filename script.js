@@ -3,6 +3,7 @@ let lastTimestamp = null; // Variable global para guardar el timestamp anterior
 let profit = 2000;
 let results = [];
 let trialCount = 0;
+let lastTimestamp = Date.now(); // Inicializar con el timestamp actuallet lastTimestamp = Date.now(); // Inicializar con el timestamp actual
 
 //const maxTrials = 100;  versión anterior
 // Variable global por defecto
@@ -59,24 +60,24 @@ function drawCard(deckName) {
     }
     
     if (typeof result === "undefined") {
-        alert(`Deck ${deckName} is empty!`);
+        alert(`!La baraja ${deckName} está vacía!`);
         return;
     }
     else{
         //document.getElementById('immediateResult').innerText = result >= 0 ? `You earned $${result}` : `You lost $${Math.abs(result)}`;
         let resultSpan = document.getElementById('resultValue');
         if (result >= 0) {
-            resultSpan.innerText = `Ganado €€{result}`;
+            resultSpan.innerText = `Ganado €${result}`;
             resultSpan.className = 'gain';  // Apply green color
         } else {
-            resultSpan.innerText = `Perdido €€{Math.abs(result)}`;
+            resultSpan.innerText = `Perdido €${Math.abs(result)}`;
             resultSpan.className = 'loss';  // Apply red color
         }
     }
 
     profit += result;
     trialCount++;
-    results.push({deck: deckName, result, profit});
+    results.push({deck: deckName, result:result, profit:profit,timestamp=currentTimestamp,TR: responseTime});
     document.getElementById('profit').innerText = profit;
 
     if (trialCount === maxTrials) {
