@@ -125,6 +125,7 @@ function displayNetScores(netScores, averageTRs, totalNetScore, averageTRTotal) 
     });
     message += `\nTotal Net Score: ${totalNetScore}\n`;
     message += `Average TR (Total): ${averageTRTotal.toFixed(2)} ms`;
+    message += `Beneficio final: €${profit}`; // Añadimos el beneficio final
 
     setTimeout(() => alert(message), 100);
 }
@@ -151,8 +152,9 @@ function downloadCSV() {
     }
 
     // Add total values
-    csvContent += "\nTotal Net Score," + totalNetScore + "\n";
-    csvContent += "Average TR (Total)," + averageTRTotal.toFixed(2) + " ms\n";
+    csvContent += "\nPuntuación Neta Total," + totalNetScore + "\n";
+    csvContent += "TR (Total)," + averageTRTotal.toFixed(2) + " ms\n";
+    csvContent += "Beneficio Final (€)," + profit + "\n"; // Añadimos el beneficio final
 
     let encodedUri = encodeURI(csvContent);
     let link = document.createElement("a");
