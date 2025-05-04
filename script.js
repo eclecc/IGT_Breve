@@ -1,4 +1,4 @@
-let profit = 2000;
+let profit = 1000;
 let results = [];
 let trialCount = 0;
 const maxTrials = 100;
