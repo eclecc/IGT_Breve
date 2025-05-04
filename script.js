@@ -36,7 +36,7 @@ function drawCard(deckName) {
     const currentTimestamp = Date.now(); // Capturamos el timestamp actual
     const responseTime = lastTimestamp ? currentTimestamp - lastTimestamp : 0; // Calculamos el tiempo de respuesta (TR)
     lastTimestamp = currentTimestamp; // Actualizamos el timestamp anterior
-    
+
     if (trialCount >= maxTrials) {
         alert("Maximum trials reached!");
         return;
@@ -45,15 +45,18 @@ function drawCard(deckName) {
     let result;
     switch(deckName) {
         case 'A':
-            result = deckA.pop();
+            result = deckA.length ? deckA.pop() : undefined; // Evitar errores si la baraja está vacía
             break;
         case 'C':
-            result = deckC.pop();
+            result = deckC.length ? deckC.pop() : undefined; // Evitar errores si la baraja está vacía
             break;
+        default:
+            alert(`Baraja no reconocida: ${deckName}`);
+            return;
     }
-    
+
     if (typeof result === "undefined") {
-        alert(`!La baraja ${deckName} está vacía!`);
+        alert(`¡La baraja ${deckName} está vacía!`);
         return;
     } else {
         // Calculamos valores desglosados
@@ -62,17 +65,15 @@ function drawCard(deckName) {
 
         // Mostramos los resultados desglosados
         let resultSpan = document.getElementById('resultValue');
-        
-        if (ganado > 0 && perdido > 0) {
-            resultSpan.innerHTML = `
-                <span class="gain">Ganado: €${ganado}</span> 
-                <span class="loss">Perdido: €${perdido}</span>
-            `;
-        } else if (ganado > 0) {
-            resultSpan.innerHTML = `<span class="gain">Ganado: €${ganado}</span>`;
-        } else if (perdido > 0) {
-            resultSpan.innerHTML = `<span class="loss">Perdido: €${perdido}</span>`;
+        if (!resultSpan) {
+            console.error("Elemento 'resultValue' no encontrado en el DOM.");
+            return;
         }
+
+        // Siempre mostramos tanto ganancia como pérdida
+        resultSpan.innerHTML = `
+            <p>Has <span class="gain">Ganado: €${ganado}</span> y <span class="loss">Perdido: €${perdido}</span></p>
+        `;
     }
 
     profit += result;
