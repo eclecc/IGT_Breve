@@ -15,11 +15,18 @@
     <h1>Iowa Gambling Task</h1>
     <p>Elige una baraja para sacar una carta, !intenta sacar el máximo beneficio!</p>
     
-    <div id="decks">
-        <button onclick="drawCard('A')">Baraja A</button>
+    //<div id="decks">
+      //  <button onclick="drawCard('A')">Baraja A</button>
         <button onclick="drawCard('B')">Baraja B</button>
         <button onclick="drawCard('C')">Baraja C</button>
         <button onclick="drawCard('D')">Baraja D</button>
+    </div>
+
+    <div id="decks">
+        <button class="deck-button" onclick="drawCard('A')"></button>
+        <button class="deck-button" onclick="drawCard('B')"></button>
+        <button class="deck-button" onclick="drawCard('C')"></button>
+        <button class="deck-button" onclick="drawCard('D')"></button>
     </div>
 
     <p id="immediateResult">Has <span id="resultValue"></span></p> <!-- Element to display the immediate result -->
