@@ -70,21 +70,14 @@ function drawCard(deckName) {
             return;
         }
 
-        // Siempre mostramos tanto ganancia como pérdida
-        resultSpan.innerHTML = `
-            <p>Has <span class="gain">Ganado: €${ganado}</span> y <span class="loss">Perdido: €${perdido}</span></p>
-        `;
-    }
-
-    profit += result;
-    trialCount++;
-    results.push({ deck: deckName, result: result, profit: profit, timestamp: currentTimestamp, TR: responseTime });
-    document.getElementById('profit').innerText = profit;
-
-    if (trialCount === maxTrials) {
-        computeNetScores();
-    }
-}
+        // Lógica para mostrar solo los valores relevantes
+        if (ganado > 0) {
+            resultSpan.innerHTML = `<p>Has <span class="gain">Ganado: €${ganado}</span></p>`;
+        } else if (perdido > 0) {
+            resultSpan.innerHTML = `<p>Has <span class="loss">Perdido: €${perdido}</span></p>`;
+        } else {
+            resultSpan.innerHTML = '';
+
 
 
 function computeNetScores() {
