@@ -4,10 +4,36 @@ body {
     padding: 50px;
 }
 
+/* General button styles */
 button {
     padding: 10px 20px;
     margin: 10px;
     font-size: 20px;
+    border: none; /* Eliminamos el borde para los botones generales */
+    cursor: pointer; /* Cambia el cursor al pasar sobre el botón */
+}
+
+
+/* Estilo para los botones de las barajas */
+.deck-button {
+    width: 100px; /* Ancho del botón */
+    height: 150px; /* Alto del botón */
+    background-image: url('blue-back.png'); /* Imagen de fondo */
+    background-size: cover; /* Ajusta la imagen para cubrir todo el botón */
+    background-position: center; /* Centra la imagen */
+    border: none; /* Sin bordes */
+    cursor: pointer; /* Cambia el cursor al pasar sobre el botón */
+    outline: none; /* Elimina el contorno al hacer clic */
+}
+/* Efecto al pasar el ratón sobre el botón */
+.deck-button:hover {
+    transform: scale(1.1); /* Agranda ligeramente el botón */
+    transition: transform 0.2s ease; /* Suaviza la animación */
+}
+
+/* Efecto al hacer clic en el botón */
+.deck-button:active {
+    transform: scale(1.05); /* Reduce ligeramente el tamaño */
 }
 
 #message {
