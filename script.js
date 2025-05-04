@@ -85,47 +85,59 @@ function drawCard(deckName) {
     }
 }
 
+
 function computeNetScores() {
     let netScores = [];
-    let averageTRs = []; // Array para almacenar los tiempos de respuesta medios por bloque
-    let totalTR = 0; // Para calcular el TR promedio total
-    let totalTRCount = 0; // Contador de intentos totales para calcular la media
-    let totalNetScore = 0; // Para calcular el Netscore total
+    let freqScores = []; // Nuevo array para freqscore
+    let averageTRs = [];
+    let totalTR = 0;
+    let totalTRCount = 0;
+    let totalNetScore = 0;
+    let totalFreqScore = 0; // Variable para freqscore total
 
     for (let i = 0; i < maxTrials; i += 20) {
         let block = results.slice(i, i + 20);
         let netScore = 0;
-        let blockTRSum = 0; // Suma de los TRs en este bloque
-        let blockCount = block.length; // Número de intentos en este bloque
+        let freqScore = 0; // Inicializamos el freqscore del bloque
+        let blockTRSum = 0;
+        let blockCount = block.length;
 
         block.forEach(record => {
             if (['C', 'D'].includes(record.deck)) netScore++; // Ventajoso
             if (['A', 'B'].includes(record.deck)) netScore--; // Desventajoso
-            blockTRSum += record.TR; // Sumar el TR del intento
+
+            if (['D', 'B'].includes(record.deck)) freqScore++; // Parte positiva del freqscore
+            if (['A', 'C'].includes(record.deck)) freqScore--; // Parte negativa del freqscore
+
+            blockTRSum += record.TR;
         });
 
-        totalNetScore += netScore; // Incrementar el Netscore total
-        totalTR += blockTRSum; // Incrementar la suma total de TRs
-        totalTRCount += blockCount; // Incrementar el número total de intentos
+        totalNetScore += netScore;
+        totalFreqScore += freqScore; // Incrementamos el freqscore total
+        totalTR += blockTRSum;
+        totalTRCount += blockCount;
 
         netScores.push(netScore);
-        averageTRs.push(blockCount > 0 ? blockTRSum / blockCount : 0); // Calcular TR medio del bloque
+        freqScores.push(freqScore); // Guardamos freqscore en el array
+        averageTRs.push(blockCount > 0 ? blockTRSum / blockCount : 0);
     }
 
-    const averageTRTotal = totalTRCount > 0 ? totalTR / totalTRCount : 0; // TR promedio total
+    const averageTRTotal = totalTRCount > 0 ? totalTR / totalTRCount : 0;
 
-    displayNetScores(netScores, averageTRs, totalNetScore, averageTRTotal);
-    return { netScores, averageTRs, totalNetScore, averageTRTotal };
+    displayNetScores(netScores, freqScores, averageTRs, totalNetScore, totalFreqScore, averageTRTotal);
+    return { netScores, freqScores, averageTRs, totalNetScore, totalFreqScore, averageTRTotal };
 }
 
-function displayNetScores(netScores, averageTRs, totalNetScore, averageTRTotal) {
+
+function displayNetScores(netScores, freqScores, averageTRs, totalNetScore, totalFreqScore, averageTRTotal) {
     let message = "Net Scores for each block:\n";
     netScores.forEach((score, index) => {
-        message += `Block ${index + 1}: Net Score = ${score}, Avg TR = ${averageTRs[index].toFixed(2)} ms\n`;
+        message += `Block ${index + 1}: Net Score = ${score}, Freq Score = ${freqScores[index]}, Avg TR = ${averageTRs[index].toFixed(2)} ms\n`;
     });
     message += `\nTotal Net Score: ${totalNetScore}\n`;
-    message += `Average TR (Total): ${averageTRTotal.toFixed(2)} ms`;
-    message += `Beneficio final: €${profit}`; // Añadimos el beneficio final
+    message += `Total Gain Loss Freq Score: ${totalFreqScore}\n`; // Mostramos freqscore total
+    message += `Average TR (Total): ${averageTRTotal.toFixed(2)} ms\n`;
+    message += `Beneficio final: €${profit}`;
 
     setTimeout(() => alert(message), 100);
 }
@@ -133,28 +145,25 @@ function displayNetScores(netScores, averageTRs, totalNetScore, averageTRTotal) 
 function downloadCSV() {
     var userId = generateStringRandomly();
     let csvContent = "data:text/csv;charset=utf-8,";
-    const { netScores, averageTRs, totalNetScore, averageTRTotal } = computeNetScores();
+    const { netScores, freqScores, averageTRs, totalNetScore, totalFreqScore, averageTRTotal } = computeNetScores();
 
-    // Header for individual results
     csvContent += "Deck,Result,Total Profit,Timestamp,TR (ms)\n";
     results.forEach(record => {
         csvContent += record.deck + "," + record.result + "," + record.profit + "," +
                       new Date(record.timestamp).toISOString() + "," + record.TR + "\n";
     });
 
-    // Add a separator for clarity
     csvContent += "\n\n";
 
-    // Header for block totals and net scores
-    csvContent += "Block,Net Score,Avg TR (ms)\n";
+    csvContent += "Block,Net Score,Freq Score,Avg TR (ms)\n";
     for (let j = 0; j < netScores.length; j++) {
-        csvContent += `Block ${j + 1},${netScores[j]},${averageTRs[j].toFixed(2)}\n`;
+        csvContent += `Block ${j + 1},${netScores[j]},${freqScores[j]},${averageTRs[j].toFixed(2)}\n`;
     }
 
-    // Add total values
     csvContent += "\nPuntuación Neta Total," + totalNetScore + "\n";
+    csvContent += "Puntuación Frecuencia Total," + totalFreqScore + "\n"; // Añadimos freqscore total
     csvContent += "TR (Total)," + averageTRTotal.toFixed(2) + " ms\n";
-    csvContent += "Beneficio Final (€)," + profit + "\n"; // Añadimos el beneficio final
+    csvContent += "Beneficio Final (€)," + profit + "\n";
 
     let encodedUri = encodeURI(csvContent);
     let link = document.createElement("a");
@@ -163,7 +172,6 @@ function downloadCSV() {
     document.body.appendChild(link);
     link.click();
 }
-
 function generateStringRandomly() {
     var l = 6;
     // 生成する文字列に含める文字セット
