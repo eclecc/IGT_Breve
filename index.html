@@ -13,16 +13,16 @@
       <button type="submit">Guardar configuración</button>
     </form>
     <h1>Iowa Gambling Task</h1>
-    <p>Elige una baraja para sacar una carta. Con cada carta puedes ganar dinero o tener que pagar una multa. Empiezas con 2000€, ¡intenta sacar el máximo beneficio! Solo puedes elegir entre las barajas A y C.</p>
+    <p>Elige una baraja para sacar una carta. Con cada carta puedes ganar dinero o tener que pagar una multa. Empiezas con 1000€, ¡intenta sacar el máximo beneficio!</p>
 
     <div id="decks">
-        <button class="deck-button" onclick="drawCard('A')">Baraja A</button>
-        <button class="deck-button" onclick="drawCard('C')">Baraja C</button>
+        <button class="deck-button" onclick="drawCard('A')"></button>
+        <button class="deck-button" onclick="drawCard('C')"></button>
     </div>
 
     <p id="immediateResult">Has <span id="resultValue"></span></p> <!-- Element to display the immediate result -->
     
-    <p id="message">Beneficio Total: €<span id="profit">2000</span></p>
+    <p id="message">Beneficio Acual: €<span id="profit">1000</span></p>
     <button onclick="downloadCSV()">Descargar Resultado (CSV)</button>
 
     <script src="script.js"></script>
