@@ -7,27 +7,37 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+    <!-- Formulario de configuración -->
     <form id="configForm">
-      <label for="maxTrials">Número máximo de intentos (por defecto 20):</label>
-      <input type="number" id="maxTrials" name="maxTrials" value="20" min="1" max="100">
-      <button type="submit">Guardar configuración</button>
+        <label for="maxTrials">Número máximo de intentos (por defecto 20):</label>
+        <input type="number" id="maxTrials" name="maxTrials" value="20" min="1" max="100">
+        <button type="submit">Guardar configuración</button>
     </form>
+
+    <!-- Título y descripción -->
     <h1>Iowa Gambling Task</h1>
     <p>Elige una baraja para sacar una carta. Con cada carta puedes ganar dinero o tener que pagar una multa. Empiezas con 1000€, ¡intenta sacar el máximo beneficio!</p>
 
+    <!-- Botones para las barajas -->
     <div id="decks">
-        <button class="deck-button" onclick="drawCard('A')"></button>
-        <button class="deck-button" onclick="drawCard('C')"></button>
+        <button class="deck-button" onclick="drawCard('A')">Baraja A</button>
+        <button class="deck-button" onclick="drawCard('C')">Baraja C</button>
     </div>
 
+    <!-- Resultado inmediato -->
     <div id="resultValue">
-
-    <p id="immediateResult">Has <span class="gain">Ganado: €X</span></p> <!-- Element to display the immediate result -->
-    <p id="immediateResult">Has <span class="loss">Perdido: €Y</span></p> <!-- Element to display the immediate result -->
+        <p id="immediateResult">
+            <!-- Este contenido se actualizará dinámicamente con los resultados -->
+        </p>
     </div>
-    <p id="message">Beneficio Acual: €<span id="profit">1000</span></p>
+
+    <!-- Beneficio actual -->
+    <p id="message">Beneficio Actual: €<span id="profit">1000</span></p>
+
+    <!-- Botón para descargar resultados -->
     <button onclick="downloadCSV()">Descargar Resultado (CSV)</button>
 
+    <!-- Script principal -->
     <script src="script.js"></script>
 </body>
 </html>
