@@ -1,9 +1,24 @@
 let lastTimestamp = null; // Variable global para guardar el timestamp anterior
 
-let profit = 1000;
+let profit = 2000;
 let results = [];
 let trialCount = 0;
-const maxTrials = 100;
+
+//const maxTrials = 100;  versión anterior
+// Variable global por defecto
+let maxTrials = 100;
+
+// Función para capturar la configuración del usuario
+document.getElementById("configForm").addEventListener("submit", function(event) {
+    event.preventDefault(); // Prevenir el comportamiento por defecto del formulario
+
+    // Obtener el valor del input, o usar el valor por defecto si no se define
+    const userInput = document.getElementById("maxTrials").value;
+    maxTrials = userInput ? parseInt(userInput) : 100;
+
+    console.log("Configuración guardada: maxTrials =", maxTrials);
+    // Aquí puedes continuar con la lógica del juego usando maxTrials
+});
 
 // Define fixed outcomes for each deck of 60 cards
 const deckA = [100, 100, -50, 100, -200, 100, -100, 100, -150, -250, 100, -250, 100, -150, -100, 100, -200, -50, 100, 100, 100, -200, 100, -250, 100, -100, -150, -50, 100, 100, -250, -100, -150, 100, 100, 100, -50, -200, 100, 100, 100, 100, -50, 100, -200, 100, -100, 100, -150, -250, 100, -250, 100, -150, -100, 100, -200, -50, 100, 100]; // Continue the sequence for 60 cards
