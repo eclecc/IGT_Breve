@@ -37,7 +37,6 @@ function drawCard(deckName) {
     const responseTime = lastTimestamp ? currentTimestamp - lastTimestamp : 0; // Calculamos el tiempo de respuesta (TR)
     lastTimestamp = currentTimestamp; // Actualizamos el timestamp anterior
     
-    
     if (trialCount >= maxTrials) {
         alert("Maximum trials reached!");
         return;
@@ -56,22 +55,22 @@ function drawCard(deckName) {
     if (typeof result === "undefined") {
         alert(`!La baraja ${deckName} está vacía!`);
         return;
-    }
-    else{
-        //document.getElementById('immediateResult').innerText = result >= 0 ? `You earned $${result}` : `You lost $${Math.abs(result)}`;
+    } else {
+        // Calculamos valores desglosados
+        const ganado = result >= 0 ? result : 0;
+        const perdido = result < 0 ? Math.abs(result) : 0;
+
+        // Mostramos los resultados desglosados
         let resultSpan = document.getElementById('resultValue');
-        if (result >= 0) {
-            resultSpan.innerText = `Ganado €${result}`;
-            resultSpan.className = 'gain';  // Apply green color
-        } else {
-            resultSpan.innerText = `Perdido €${Math.abs(result)}`;
-            resultSpan.className = 'loss';  // Apply red color
-        }
+        resultSpan.innerHTML = `
+            <span class="gain">Ganado: €${ganado}</span> 
+            <span class="loss">Perdido: €${perdido}</span>
+        `;
     }
 
     profit += result;
     trialCount++;
-    results.push({deck: deckName, result:result, profit:profit,timestamp:currentTimestamp,TR: responseTime});
+    results.push({ deck: deckName, result: result, profit: profit, timestamp: currentTimestamp, TR: responseTime });
     document.getElementById('profit').innerText = profit;
 
     if (trialCount === maxTrials) {
