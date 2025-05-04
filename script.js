@@ -1,13 +1,12 @@
 let lastTimestamp = null; // Variable global para guardar el timestamp anterior
-
-let profit = 2000;
+let profit = 1000;
 let results = [];
 let trialCount = 0;
-let lastTimestamp = Date.now(); // Inicializar con el timestamp actuallet lastTimestamp = Date.now(); // Inicializar con el timestamp actual
+lastTimestamp = Date.now(); // no-inicializar con el timestamp actuallet lastTimestamp = Date.now(); // Inicializar con el timestamp actual
 
 //const maxTrials = 100;  versión anterior
 // Variable global por defecto
-let maxTrials = 100;
+let maxTrials = 20;
 
 // Función para capturar la configuración del usuario
 document.getElementById("configForm").addEventListener("submit", function(event) {
@@ -23,9 +22,10 @@ document.getElementById("configForm").addEventListener("submit", function(event)
 
 // Define fixed outcomes for each deck of 60 cards
 const deckA = [100, 100, -50, 100, -200, 100, -100, 100, -150, -250, 100, -250, 100, -150, -100, 100, -200, -50, 100, 100, 100, -200, 100, -250, 100, -100, -150, -50, 100, 100, -250, -100, -150, 100, 100, 100, -50, -200, 100, 100, 100, 100, -50, 100, -200, 100, -100, 100, -150, -250, 100, -250, 100, -150, -100, 100, -200, -50, 100, 100]; // Continue the sequence for 60 cards
-const deckB = [100, 100, 100, 100, 100, 100, 100, 100, -1150, 100, 100, 100, 100, -1150, 100, 100, 100, 100, 100, 100, -1150, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, -1150, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, -1150, 100, 100, 100, 100, -1150, 100, 100, 100, 100, 100, 100]; // Continue the sequence for 60 cards
+//const deckB = [100, 100, 100, 100, 100, 100, 100, 100, -1150, 100, 100, 100, 100, -1150, 100, 100, 100, 100, 100, 100, -1150, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, -1150, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, -1150, 100, 100, 100, 100, -1150, 100, 100, 100, 100, 100, 100]; // Continue the sequence for 60 cards
 const deckC = [50, 50, 0, 50, 0, 50, 0, 50, 0, 0, 50, 25, -25, 50, 50, 50, 25, -25, 50, 0, 50, 50, 50, 0, 25, 0, 50, 50, -25, 0, 50, 50, 50, 25, 25, 50, -25, 50, 0, -25, 50, 50, 0, 50, 0, 50, 0, 50, 0, 0, 50, 25, -25, 50, 50, 50, 25, -25, 50, 0]; // Continue the sequence for 60 cards
-const deckD = [50, 50, 50, 50, 50, 50, 50, 50, 50, -200, 50, 50, 50, 50, 50, 50, 50, 50, 50, -200, 50, 50, 50, 50, 50, 50, 50, 50, -200, 50, 50, 50, 50, 50, -200, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, -200, 50, 50, 50, 50, 50, 50, 50, 50, 50, -200]; // Continue the sequence for 60 cards
+//const deckD = [50, 50, 50, 50, 50, 50, 50, 50, 50, -200, 50, 50, 50, 50, 50, 50, 50, 50, 50, -200, 50, 50, 50, 50, 50, 50, 50, 50, -200, 50, 50, 50, 50, 50, -200, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, -200, 50, 50, 50, 50, 50, 50, 50, 50, 50, -200]; // Continue the sequence for 60 cards
+
 //Based on "Characterization of the decision-making deficit of patients with ventromedial prefrontal cortex lesions"
 //const deckA = [100, 100, -150, 100, -300, 100, -200, 100, -250, -350, 100, -350, 100, -250, -200, 100, -300, -150, 100, 100, 100, -300, 100, -350, 100, -200, -250, -150, 100, 100, -350, -200, -250, 100, 100, 100, -150, -300, 100, 100]; // Continue the sequence for 40 cards
 //const deckB = [0, 0, 100, 0, 100, 0, 100, 100, -125, 100, 0, 0, 100, -125, 100, 0, 0, 100, 100, 100, -125, 100, 0, 0, 100, 0, 100, 0, 100, 100, 0, -125, 100, 0, 100, 0, 100, 0, 100, 100]; // Continue the sequence for 40 cards
@@ -37,7 +37,6 @@ function drawCard(deckName) {
     const responseTime = lastTimestamp ? currentTimestamp - lastTimestamp : 0; // Calculamos el tiempo de respuesta (TR)
     lastTimestamp = currentTimestamp; // Actualizamos el timestamp anterior
     
-    
     if (trialCount >= maxTrials) {
         alert("Maximum trials reached!");
         return;
@@ -48,36 +47,37 @@ function drawCard(deckName) {
         case 'A':
             result = deckA.pop();
             break;
-        case 'B':
-            result = deckB.pop();
-            break;
         case 'C':
             result = deckC.pop();
-            break;
-        case 'D':
-            result = deckD.pop();
             break;
     }
     
     if (typeof result === "undefined") {
         alert(`!La baraja ${deckName} está vacía!`);
         return;
-    }
-    else{
-        //document.getElementById('immediateResult').innerText = result >= 0 ? `You earned $${result}` : `You lost $${Math.abs(result)}`;
+    } else {
+        // Calculamos valores desglosados
+        const ganado = result >= 0 ? result : 0;
+        const perdido = result < 0 ? Math.abs(result) : 0;
+
+        // Mostramos los resultados desglosados
         let resultSpan = document.getElementById('resultValue');
-        if (result >= 0) {
-            resultSpan.innerText = `Ganado €${result}`;
-            resultSpan.className = 'gain';  // Apply green color
-        } else {
-            resultSpan.innerText = `Perdido €${Math.abs(result)}`;
-            resultSpan.className = 'loss';  // Apply red color
+        
+        if (ganado > 0 && perdido > 0) {
+            resultSpan.innerHTML = `
+                <span class="gain">Ganado: €${ganado}</span> 
+                <span class="loss">Perdido: €${perdido}</span>
+            `;
+        } else if (ganado > 0) {
+            resultSpan.innerHTML = `<span class="gain">Ganado: €${ganado}</span>`;
+        } else if (perdido > 0) {
+            resultSpan.innerHTML = `<span class="loss">Perdido: €${perdido}</span>`;
         }
     }
 
     profit += result;
     trialCount++;
-    results.push({deck: deckName, result:result, profit:profit,timestamp=currentTimestamp,TR: responseTime});
+    results.push({ deck: deckName, result: result, profit: profit, timestamp: currentTimestamp, TR: responseTime });
     document.getElementById('profit').innerText = profit;
 
     if (trialCount === maxTrials) {
@@ -85,46 +85,77 @@ function drawCard(deckName) {
     }
 }
 
+
 function computeNetScores() {
     let netScores = [];
-    let averageTRs = []; // Array para almacenar los tiempos de respuesta medios por bloque
-    let totalTR = 0; // Para calcular el TR promedio total
-    let totalTRCount = 0; // Contador de intentos totales para calcular la media
-    let totalNetScore = 0; // Para calcular el Netscore total
+    let averageTRs = [];
+    let totalTR = 0;
+    let totalTRCount = 0;
+    let totalNetScore = 0;
 
-    for (let i = 0; i < maxTrials; i += 20) {
-        let block = results.slice(i, i + 20);
+    // Variables para los subtotales
+    let ultimos15NetScore = 0;
+    let ultimos15TR = 0;
+    let ultimos15Count = 0;
+
+    let ultimos10NetScore = 0;
+    let ultimos10TR = 0;
+    let ultimos10Count = 0;
+
+    for (let i = 0; i < maxTrials; i += 5) {
+        let block = results.slice(i, i + 5);
         let netScore = 0;
-        let blockTRSum = 0; // Suma de los TRs en este bloque
-        let blockCount = block.length; // Número de intentos en este bloque
+        let blockTRSum = 0;
+        let blockCount = block.length;
 
         block.forEach(record => {
-            if (['C', 'D'].includes(record.deck)) netScore++; // Ventajoso
-            if (['A', 'B'].includes(record.deck)) netScore--; // Desventajoso
-            blockTRSum += record.TR; // Sumar el TR del intento
+            if (['C'].includes(record.deck)) netScore++; // Ventajoso
+            if (['A'].includes(record.deck)) netScore--; // Desventajoso
+
+            blockTRSum += record.TR;
         });
 
-        totalNetScore += netScore; // Incrementar el Netscore total
-        totalTR += blockTRSum; // Incrementar la suma total de TRs
-        totalTRCount += blockCount; // Incrementar el número total de intentos
+        totalNetScore += netScore;
+        totalTR += blockTRSum;
+        totalTRCount += blockCount;
 
         netScores.push(netScore);
-        averageTRs.push(blockCount > 0 ? blockTRSum / blockCount : 0); // Calcular TR medio del bloque
+        averageTRs.push(blockCount > 0 ? blockTRSum / blockCount : 0);
+
+  // Acumular subtotales para "últimos 15" y "últimos 10"
+        if (i > 5 && i <= 20) { // Bloques 2+3+4 (6 a 20índices 20 a 79)
+            ultimos15NetScore += netScore;
+            ultimos15TR += blockTRSum;
+            ultimos15Count += blockCount;
+        }
+        if (i > 10 && i <= 20) { // Bloques 3+4 (índices 11 a 20)
+            ultimos10NetScore += netScore;
+            ultimos10TR += blockTRSum;
+            ultimos10Count += blockCount;
+        }
+
+        
     }
 
-    const averageTRTotal = totalTRCount > 0 ? totalTR / totalTRCount : 0; // TR promedio total
-
-    displayNetScores(netScores, averageTRs, totalNetScore, averageTRTotal);
-    return { netScores, averageTRs, totalNetScore, averageTRTotal };
+    const averageTRTotal = totalTRCount > 0 ? totalTR / totalTRCount : 0;
+    const ultimos15AverageTR = ultimos15Count > 0 ? ultimos15TR / ultimos15Count : 0;
+    const ultimos10AverageTR = ultimos10Count > 0 ? ultimos10TR / ultimos10Count : 0;
+    
+    displayNetScores(netScores, averageTRs, totalNetScore, averageTRTotal, ultimos15NetScore, ultimos15AverageTR, ultimos10NetScore, ultimos10AverageTR);
+    return { netScores, averageTRs, totalNetScore, averageTRTotal, ultimos15NetScore, ultimos15AverageTR, ultimos10NetScore, ultimos10AverageTR };
 }
 
-function displayNetScores(netScores, averageTRs, totalNetScore, averageTRTotal) {
+
+function displayNetScores(netScores, averageTRs, totalNetScore, averageTRTotal, ultimos15NetScore, ultimos15AverageTR, ultimos10NetScore, ultimos10AverageTR) {
     let message = "Net Scores for each block:\n";
     netScores.forEach((score, index) => {
         message += `Block ${index + 1}: Net Score = ${score}, Avg TR = ${averageTRs[index].toFixed(2)} ms\n`;
     });
+    message += `\nSubtotal (últimos 15): Net Score = ${ultimos15NetScore}, Avg TR = ${ultimos15AverageTR.toFixed(2)} ms\n`;
+    message += `Subtotal (últimos 10): Net Score = ${ultimos10NetScore}, Avg TR = ${ultimos10AverageTR.toFixed(2)} ms\n`;
     message += `\nTotal Net Score: ${totalNetScore}\n`;
-    message += `Average TR (Total): ${averageTRTotal.toFixed(2)} ms`;
+    message += `Average TR (Total): ${averageTRTotal.toFixed(2)} ms\n`;
+    message += `Beneficio final: €${profit}`;
 
     setTimeout(() => alert(message), 100);
 }
@@ -132,28 +163,34 @@ function displayNetScores(netScores, averageTRs, totalNetScore, averageTRTotal) 
 function downloadCSV() {
     var userId = generateStringRandomly();
     let csvContent = "data:text/csv;charset=utf-8,";
-    const { netScores, averageTRs, totalNetScore, averageTRTotal } = computeNetScores();
 
-    // Header for individual results
+    // Llama a computeNetScores para obtener todos los datos necesarios
+    const { netScores, averageTRs, totalNetScore, averageTRTotal, ultimos15NetScore, ultimos15AverageTR, ultimos10NetScore, ultimos10AverageTR } = computeNetScores();
+
+    // Agregar encabezados y datos de resultados
     csvContent += "Deck,Result,Total Profit,Timestamp,TR (ms)\n";
     results.forEach(record => {
         csvContent += record.deck + "," + record.result + "," + record.profit + "," +
                       new Date(record.timestamp).toISOString() + "," + record.TR + "\n";
     });
 
-    // Add a separator for clarity
+    // Espacios entre secciones
     csvContent += "\n\n";
 
-    // Header for block totals and net scores
+    // Agregar datos de bloques
     csvContent += "Block,Net Score,Avg TR (ms)\n";
     for (let j = 0; j < netScores.length; j++) {
         csvContent += `Block ${j + 1},${netScores[j]},${averageTRs[j].toFixed(2)}\n`;
     }
 
-    // Add total values
-    csvContent += "\nTotal Net Score," + totalNetScore + "\n";
-    csvContent += "Average TR (Total)," + averageTRTotal.toFixed(2) + " ms\n";
+    // Agregar totales y subtotales
+    csvContent += "\nPuntuación Neta Total," + totalNetScore + "\n";
+    csvContent += "TR (Total)," + averageTRTotal.toFixed(2) + " ms\n";
+    csvContent += "Beneficio Final (€)," + profit + "\n";
+    csvContent += "\nSubtotal (últimos 15)," + ultimos15NetScore + "," + ultimos15AverageTR.toFixed(2) + " ms\n";
+    csvContent += "Subtotal (últimos 10)," + ultimos10NetScore + "," + ultimos10AverageTR.toFixed(2) + " ms\n";
 
+    // Codificar y descargar el archivo
     let encodedUri = encodeURI(csvContent);
     let link = document.createElement("a");
     link.setAttribute("href", encodedUri);
