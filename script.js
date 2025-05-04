@@ -157,28 +157,34 @@ function displayNetScores(netScores, averageTRs, totalNetScore, averageTRTotal, 
 function downloadCSV() {
     var userId = generateStringRandomly();
     let csvContent = "data:text/csv;charset=utf-8,";
-    const { netScores, averageTRs, totalNetScore, averageTRTotal } = computeNetScores();
 
+    // Llama a computeNetScores para obtener todos los datos necesarios
+    const { netScores, averageTRs, totalNetScore, averageTRTotal, ultimos15NetScore, ultimos15AverageTR, ultimos10NetScore, ultimos10AverageTR } = computeNetScores();
+
+    // Agregar encabezados y datos de resultados
     csvContent += "Deck,Result,Total Profit,Timestamp,TR (ms)\n";
     results.forEach(record => {
         csvContent += record.deck + "," + record.result + "," + record.profit + "," +
                       new Date(record.timestamp).toISOString() + "," + record.TR + "\n";
     });
 
+    // Espacios entre secciones
     csvContent += "\n\n";
 
+    // Agregar datos de bloques
     csvContent += "Block,Net Score,Avg TR (ms)\n";
     for (let j = 0; j < netScores.length; j++) {
         csvContent += `Block ${j + 1},${netScores[j]},${averageTRs[j].toFixed(2)}\n`;
     }
 
+    // Agregar totales y subtotales
     csvContent += "\nPuntuación Neta Total," + totalNetScore + "\n";
     csvContent += "TR (Total)," + averageTRTotal.toFixed(2) + " ms\n";
     csvContent += "Beneficio Final (€)," + profit + "\n";
     csvContent += "\nSubtotal (últimos 15)," + ultimos15NetScore + "," + ultimos15AverageTR.toFixed(2) + " ms\n";
     csvContent += "Subtotal (últimos 10)," + ultimos10NetScore + "," + ultimos10AverageTR.toFixed(2) + " ms\n";
 
-    
+    // Codificar y descargar el archivo
     let encodedUri = encodeURI(csvContent);
     let link = document.createElement("a");
     link.setAttribute("href", encodedUri);
@@ -186,6 +192,7 @@ function downloadCSV() {
     document.body.appendChild(link);
     link.click();
 }
+
 function generateStringRandomly() {
     var l = 6;
     // 生成する文字列に含める文字セット
