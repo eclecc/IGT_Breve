@@ -3,7 +3,7 @@ let lastTimestamp = null; // Variable global para guardar el timestamp anterior
 let profit = 2000;
 let results = [];
 let trialCount = 0;
-let lastTimestamp = Date.now(); // Inicializar con el timestamp actuallet lastTimestamp = Date.now(); // Inicializar con el timestamp actual
+lastTimestamp = Date.now(); // no-inicializar con el timestamp actuallet lastTimestamp = Date.now(); // Inicializar con el timestamp actual
 
 //const maxTrials = 100;  versión anterior
 // Variable global por defecto
@@ -77,7 +77,7 @@ function drawCard(deckName) {
 
     profit += result;
     trialCount++;
-    results.push({deck: deckName, result:result, profit:profit,timestamp=currentTimestamp,TR: responseTime});
+    results.push({deck: deckName, result:result, profit:profit,timestamp:currentTimestamp,TR: responseTime});
     document.getElementById('profit').innerText = profit;
 
     if (trialCount === maxTrials) {
