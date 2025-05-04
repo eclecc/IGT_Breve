@@ -1,34 +1,175 @@
-let profit = 1000; // Beneficio inicial
-let trialCount = 0; // Contador de intentos
-const maxTrials = 20; // Número máximo de intentos
-const deckA = [100, -50, 200, -100]; // Baraja A (ejemplo de valores)
-const deckC = [50, -20, 150, -80]; // Baraja C (ejemplo de valores)
-let lastTimestamp = null; // Última marca de tiempo
-const results = []; // Resultados de cada intento
+let lastTimestamp = null; // Variable global para guardar el timestamp anterior
+
+let profit = 2000;
+let results = [];
+let trialCount = 0;
+let lastTimestamp = Date.now(); // Inicializar con el timestamp actuallet lastTimestamp = Date.now(); // Inicializar con el timestamp actual
+
+//const maxTrials = 100;  versión anterior
+// Variable global por defecto
+let maxTrials = 100;
+
+// Función para capturar la configuración del usuario
+document.getElementById("configForm").addEventListener("submit", function(event) {
+    event.preventDefault(); // Prevenir el comportamiento por defecto del formulario
+
+    // Obtener el valor del input, o usar el valor por defecto si no se define
+    const userInput = document.getElementById("maxTrials").value;
+    maxTrials = userInput ? parseInt(userInput) : 100;
+
+    console.log("Configuración guardada: maxTrials =", maxTrials);
+    // Aquí puedes continuar con la lógica del juego usando maxTrials
+});
+
+// Define fixed outcomes for each deck of 60 cards
+const deckA = [100, 100, -50, 100, -200, 100, -100, 100, -150, -250, 100, -250, 100, -150, -100, 100, -200, -50, 100, 100, 100, -200, 100, -250, 100, -100, -150, -50, 100, 100, -250, -100, -150, 100, 100, 100, -50, -200, 100, 100, 100, 100, -50, 100, -200, 100, -100, 100, -150, -250, 100, -250, 100, -150, -100, 100, -200, -50, 100, 100]; // Continue the sequence for 60 cards
+const deckB = [100, 100, 100, 100, 100, 100, 100, 100, -1150, 100, 100, 100, 100, -1150, 100, 100, 100, 100, 100, 100, -1150, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, -1150, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, -1150, 100, 100, 100, 100, -1150, 100, 100, 100, 100, 100, 100]; // Continue the sequence for 60 cards
+const deckC = [50, 50, 0, 50, 0, 50, 0, 50, 0, 0, 50, 25, -25, 50, 50, 50, 25, -25, 50, 0, 50, 50, 50, 0, 25, 0, 50, 50, -25, 0, 50, 50, 50, 25, 25, 50, -25, 50, 0, -25, 50, 50, 0, 50, 0, 50, 0, 50, 0, 0, 50, 25, -25, 50, 50, 50, 25, -25, 50, 0]; // Continue the sequence for 60 cards
+const deckD = [50, 50, 50, 50, 50, 50, 50, 50, 50, -200, 50, 50, 50, 50, 50, 50, 50, 50, 50, -200, 50, 50, 50, 50, 50, 50, 50, 50, -200, 50, 50, 50, 50, 50, -200, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, -200, 50, 50, 50, 50, 50, 50, 50, 50, 50, -200]; // Continue the sequence for 60 cards
+//Based on "Characterization of the decision-making deficit of patients with ventromedial prefrontal cortex lesions"
+//const deckA = [100, 100, -150, 100, -300, 100, -200, 100, -250, -350, 100, -350, 100, -250, -200, 100, -300, -150, 100, 100, 100, -300, 100, -350, 100, -200, -250, -150, 100, 100, -350, -200, -250, 100, 100, 100, -150, -300, 100, 100]; // Continue the sequence for 40 cards
+//const deckB = [0, 0, 100, 0, 100, 0, 100, 100, -125, 100, 0, 0, 100, -125, 100, 0, 0, 100, 100, 100, -125, 100, 0, 0, 100, 0, 100, 0, 100, 100, 0, -125, 100, 0, 100, 0, 100, 0, 100, 100]; // Continue the sequence for 40 cards
+//const deckC = [50, 50, -50, 50, -50, 50, -50, 50, -50, -50, 50, -25, -75, 50, 50, 50, -25, -75, 50, -50, 50, 50, 50, -50, -25, -50, 50, 50, -75, -50, 50, 50, 50, -25, -25, 50, -75, 50, -50, -75]; // Continue the sequence for 40 cards
+//const deckD = [0, 50, 0, 50, 50, 0, 0, 50, 50, -250, 0, 0, 50, 50, 0, 50, 50, 50, 0, -250, 50, 0, 50, 50, 0, 0, 0, 50, -250, 50, 50, 0, 50, 0, -250, 0, 50, 50, 0, 50]; // Continue the sequence for 40 cards
 
 function drawCard(deckName) {
     const currentTimestamp = Date.now(); // Capturamos el timestamp actual
     const responseTime = lastTimestamp ? currentTimestamp - lastTimestamp : 0; // Calculamos el tiempo de respuesta (TR)
     lastTimestamp = currentTimestamp; // Actualizamos el timestamp anterior
-
+    
+    
     if (trialCount >= maxTrials) {
-        alert("¡Has alcanzado el número máximo de intentos!");
+        alert("Maximum trials reached!");
         return;
     }
 
     let result;
-    switch (deckName) {
+    switch(deckName) {
         case 'A':
-            result = deckA.length ? deckA.pop() : undefined;
+            result = deckA.pop();
+            break;
+        case 'B':
+            result = deckB.pop();
             break;
         case 'C':
-            result = deckC.length ? deckC.pop() : undefined;
+            result = deckC.pop();
             break;
-        default:
-            alert(`Baraja no reconocida: ${deckName}`);
-            return;
+        case 'D':
+            result = deckD.pop();
+            break;
+    }
+    
+    if (typeof result === "undefined") {
+        alert(`!La baraja ${deckName} está vacía!`);
+        return;
+    }
+    else{
+        //document.getElementById('immediateResult').innerText = result >= 0 ? `You earned $${result}` : `You lost $${Math.abs(result)}`;
+        let resultSpan = document.getElementById('resultValue');
+        if (result >= 0) {
+            resultSpan.innerText = `Ganado €${result}`;
+            resultSpan.className = 'gain';  // Apply green color
+        } else {
+            resultSpan.innerText = `Perdido €${Math.abs(result)}`;
+            resultSpan.className = 'loss';  // Apply red color
+        }
     }
 
-    if (typeof result === "undefined") {
-        alert(`¡La baraja ${deckName} está vac
-
+    profit += result;
+    trialCount++;
+    results.push({deck: deckName, result:result, profit:profit,timestamp=currentTimestamp,TR: responseTime});
+    document.getElementById('profit').innerText = profit;
+
+    if (trialCount === maxTrials) {
+        computeNetScores();
+    }
+}
+
+function computeNetScores() {
+    let netScores = [];
+    let averageTRs = []; // Array para almacenar los tiempos de respuesta medios por bloque
+    let totalTR = 0; // Para calcular el TR promedio total
+    let totalTRCount = 0; // Contador de intentos totales para calcular la media
+    let totalNetScore = 0; // Para calcular el Netscore total
+
+    for (let i = 0; i < maxTrials; i += 20) {
+        let block = results.slice(i, i + 20);
+        let netScore = 0;
+        let blockTRSum = 0; // Suma de los TRs en este bloque
+        let blockCount = block.length; // Número de intentos en este bloque
+
+        block.forEach(record => {
+            if (['C', 'D'].includes(record.deck)) netScore++; // Ventajoso
+            if (['A', 'B'].includes(record.deck)) netScore--; // Desventajoso
+            blockTRSum += record.TR; // Sumar el TR del intento
+        });
+
+        totalNetScore += netScore; // Incrementar el Netscore total
+        totalTR += blockTRSum; // Incrementar la suma total de TRs
+        totalTRCount += blockCount; // Incrementar el número total de intentos
+
+        netScores.push(netScore);
+        averageTRs.push(blockCount > 0 ? blockTRSum / blockCount : 0); // Calcular TR medio del bloque
+    }
+
+    const averageTRTotal = totalTRCount > 0 ? totalTR / totalTRCount : 0; // TR promedio total
+
+    displayNetScores(netScores, averageTRs, totalNetScore, averageTRTotal);
+    return { netScores, averageTRs, totalNetScore, averageTRTotal };
+}
+
+function displayNetScores(netScores, averageTRs, totalNetScore, averageTRTotal) {
+    let message = "Net Scores for each block:\n";
+    netScores.forEach((score, index) => {
+        message += `Block ${index + 1}: Net Score = ${score}, Avg TR = ${averageTRs[index].toFixed(2)} ms\n`;
+    });
+    message += `\nTotal Net Score: ${totalNetScore}\n`;
+    message += `Average TR (Total): ${averageTRTotal.toFixed(2)} ms`;
+
+    setTimeout(() => alert(message), 100);
+}
+
+function downloadCSV() {
+    var userId = generateStringRandomly();
+    let csvContent = "data:text/csv;charset=utf-8,";
+    const { netScores, averageTRs, totalNetScore, averageTRTotal } = computeNetScores();
+
+    // Header for individual results
+    csvContent += "Deck,Result,Total Profit,Timestamp,TR (ms)\n";
+    results.forEach(record => {
+        csvContent += record.deck + "," + record.result + "," + record.profit + "," +
+                      new Date(record.timestamp).toISOString() + "," + record.TR + "\n";
+    });
+
+    // Add a separator for clarity
+    csvContent += "\n\n";
+
+    // Header for block totals and net scores
+    csvContent += "Block,Net Score,Avg TR (ms)\n";
+    for (let j = 0; j < netScores.length; j++) {
+        csvContent += `Block ${j + 1},${netScores[j]},${averageTRs[j].toFixed(2)}\n`;
+    }
+
+    // Add total values
+    csvContent += "\nTotal Net Score," + totalNetScore + "\n";
+    csvContent += "Average TR (Total)," + averageTRTotal.toFixed(2) + " ms\n";
+
+    let encodedUri = encodeURI(csvContent);
+    let link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", "igt_results" + userId + ".csv");
+    document.body.appendChild(link);
+    link.click();
+}
+
+function generateStringRandomly() {
+    var l = 6;
+    // 生成する文字列に含める文字セット
+    var c = "abcdefghijklmnopqrstuvwxyz0123456789";
+    var cl = c.length;
+    var r = "_";
+    for (var i = 0; i < l; i++) {
+        r += c[Math.floor(Math.random() * cl)];
+    }
+    return r;
+}
