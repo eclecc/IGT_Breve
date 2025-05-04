@@ -82,15 +82,22 @@ function drawCard(deckName) {
 
 function computeNetScores() {
     let netScores = [];
-    let freqScores = []; // Nuevo array para freqscore
     let averageTRs = [];
     let totalTR = 0;
     let totalTRCount = 0;
     let totalNetScore = 0;
-    let totalFreqScore = 0; // Variable para freqscore total
 
-    for (let i = 0; i < maxTrials; i += 20) {
-        let block = results.slice(i, i + 20);
+    // Variables para los subtotales
+    let ultimos15NetScore = 0;
+    let ultimos15TR = 0;
+    let ultimos15Count = 0;
+
+    let ultimos10NetScore = 0;
+    let ultimos10TR = 0;
+    let ultimos10Count = 0;
+
+    for (let i = 0; i < maxTrials; i += 5) {
+        let block = results.slice(i, i + 5);
         let netScore = 0;
         let blockTRSum = 0;
         let blockCount = block.length;
@@ -108,20 +115,38 @@ function computeNetScores() {
 
         netScores.push(netScore);
         averageTRs.push(blockCount > 0 ? blockTRSum / blockCount : 0);
+
+  // Acumular subtotales para "últimos 15" y "últimos 10"
+        if (i > 5 && i <= 20) { // Bloques 2+3+4 (6 a 20índices 20 a 79)
+            ultimos15NetScore += netScore;
+            ultimos15TR += blockTRSum;
+            ultimos15Count += blockCount;
+        }
+        if (i > 10 && i <= 20) { // Bloques 3+4 (índices 11 a 20)
+            ultimos10NetScore += netScore;
+            ultimos10TR += blockTRSum;
+            ultimos10Count += blockCount;
+        }
+
+        
     }
 
     const averageTRTotal = totalTRCount > 0 ? totalTR / totalTRCount : 0;
-
-    displayNetScores(netScores, averageTRs, totalNetScore, averageTRTotal);
-    return { netScores, averageTRs, totalNetScore, averageTRTotal };
+    const ultimos15AverageTR = ultimos15Count > 0 ? ultimos15TR / ultimos15Count : 0;
+    const ultimos10AverageTR = ultimos10Count > 0 ? ultimos10TR / ultimos10Count : 0;
+    
+    displayNetScores(netScores, averageTRs, totalNetScore, averageTRTotal, ultimos15NetScore, ultimos15AverageTR, ultimos10NetScore, ultimos10AverageTR);
+    return { netScores, averageTRs, totalNetScore, averageTRTotal, ultimos15NetScore, ultimos15AverageTR, ultimos10NetScore, ultimos10AverageTR };
 }
 
 
-function displayNetScores(netScores, averageTRs, totalNetScore, averageTRTotal) {
+function displayNetScores(netScores, averageTRs, totalNetScore, averageTRTotal, ultimos15NetScore, ultimos15AverageTR, ultimos10NetScore, ultimos10AverageTR) {
     let message = "Net Scores for each block:\n";
     netScores.forEach((score, index) => {
-        message += `Block ${index + 1}: Net Score = ${score},  Avg TR = ${averageTRs[index].toFixed(2)} ms\n`;
+        message += `Block ${index + 1}: Net Score = ${score}, Avg TR = ${averageTRs[index].toFixed(2)} ms\n`;
     });
+    message += `\nSubtotal (últimos 15): Net Score = ${ultimos15NetScore}, Avg TR = ${ultimos15AverageTR.toFixed(2)} ms\n`;
+    message += `Subtotal (últimos 10): Net Score = ${ultimos10NetScore}, Avg TR = ${ultimos10AverageTR.toFixed(2)} ms\n`;
     message += `\nTotal Net Score: ${totalNetScore}\n`;
     message += `Average TR (Total): ${averageTRTotal.toFixed(2)} ms\n`;
     message += `Beneficio final: €${profit}`;
@@ -150,7 +175,10 @@ function downloadCSV() {
     csvContent += "\nPuntuación Neta Total," + totalNetScore + "\n";
     csvContent += "TR (Total)," + averageTRTotal.toFixed(2) + " ms\n";
     csvContent += "Beneficio Final (€)," + profit + "\n";
+    csvContent += "\nSubtotal (últimos 15)," + ultimos15NetScore + "," + ultimos15AverageTR.toFixed(2) + " ms\n";
+    csvContent += "Subtotal (últimos 10)," + ultimos10NetScore + "," + ultimos10AverageTR.toFixed(2) + " ms\n";
 
+    
     let encodedUri = encodeURI(csvContent);
     let link = document.createElement("a");
     link.setAttribute("href", encodedUri);
