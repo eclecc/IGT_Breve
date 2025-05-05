@@ -34,16 +34,22 @@ const deckC = [50, 50, 0, 50, 0, 50, 0, 50, 0, 0, 50, 25, -25, 50, 50, 50, 25, -
 
 function drawCard(deckName) {
     const currentTimestamp = Date.now(); // Capturamos el timestamp actual
-    const responseTime = lastTimestamp ? currentTimestamp - lastTimestamp : 0; // Calculamos el tiempo de respuesta (TR)
-    lastTimestamp = currentTimestamp; // Actualizamos el timestamp anterior
-    
+
+    let responseTime = 0; // Inicializamos el tiempo de respuesta como 0
+
+    // Si no hay un timestamp previo (primer clic), simplemente inicializamos el proceso
+    if (lastTimestamp !== null) {
+        responseTime = currentTimestamp - lastTimestamp; // Calculamos el tiempo de respuesta
+    }
+    lastTimestamp = currentTimestamp; // Actualizamos el timestamp previo
+
     if (trialCount >= maxTrials) {
         alert("Maximum trials reached!");
         return;
     }
 
     let result;
-    switch(deckName) {
+    switch (deckName) {
         case 'A':
             result = deckA.pop();
             break;
@@ -51,43 +57,24 @@ function drawCard(deckName) {
             result = deckC.pop();
             break;
     }
-    
+
     if (typeof result === "undefined") {
         alert(`¡La baraja ${deckName} está vacía!`);
         return;
     } else {
-        // Calculamos valores desglosados
-        const ganado = result >= 0 ? result : 0;
-        const perdido = result < 0 ? Math.abs(result) : 0;
+        let ganado = result >= 0 ? result : 0;
+        let perdido = result < 0 ? Math.abs(result) : 0;
 
-        // Mostramos los resultados desglosados
         let resultSpan = document.getElementById('resultValue');
-        let audio = new Audio(); // Crear un objeto de audio
+        let audio = new Audio();
 
         if (ganado > 0) {
-            // Ganancia
             resultSpan.innerHTML = `<span class="gain">Has ganado: €${ganado}</span>`;
-            resultSpan.style.color = 'green'; // Cambiar color a verde
-            audio.src = 'success.wav'; // Archivo de sonido para ganancia
-            audio.play(); // Reproducir sonido
-        } else if (perdido > 0) {
-            // Pérdida
-            resultSpan.innerHTML = `<span class="loss">Has perdido: €${perdido}</span>`;
-            resultSpan.style.color = 'red'; // Cambiar color a rojo
-            audio.src = 'fail.wav'; // Archivo de sonido para pérdida
-            audio.play(); // Reproducir sonido
-        }
-    }
-
-    profit += result;
-    trialCount++;
-    results.push({ deck: deckName, result: result, profit: profit, timestamp: currentTimestamp, TR: responseTime });
-    document.getElementById('profit').innerText = profit;
-
-    if (trialCount === maxTrials) {
-        computeNetScores();
-    }
-}
+            resultSpan.style.color = 'green';
+            audio.src = 'success.wav';
+            audio.play();
+       
+
 
 function calcularTRperdidasGananciasPorBloques(tipo) {
     if (results.length === 0) {
