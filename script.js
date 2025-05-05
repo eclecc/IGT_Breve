@@ -193,6 +193,7 @@ function displayNetScores(netScores, averageTRs, totalNetScore, averageTRTotal, 
     message += `Average TR (Total): ${averageTRTotal.toFixed(2)} ms\n`;
     message += `Beneficio final: €${profit}`;
      // Mostrar TRperdidas
+    message += "\n"; // Añade un salto de línea para un párrafo vacío
     message += `TRperdidas:\n  Total: ${TRperdidas.total.toFixed(2)} ms\n  Bloques 1+2: ${TRperdidas.bloques[0].toFixed(2)} ms\n  Bloques 3+4: ${TRperdidas.bloques[1].toFixed(2)} ms\n`;
 
     // Mostrar TRganancias
@@ -230,6 +231,11 @@ function downloadCSV() {
     csvContent += "Beneficio Final (€)," + profit + "\n";
     csvContent += "\nSubtotal (últimos 15)," + ultimos15NetScore + "," + ultimos15AverageTR.toFixed(2) + " ms\n";
     csvContent += "Subtotal (últimos 10)," + ultimos10NetScore + "," + ultimos10AverageTR.toFixed(2) + " ms\n";
+    
+    // Espacios entre secciones
+    csvContent += "\n\n";
+
+    // Agregar TR pérdidas y ganancias
     csvContent += "Índice,Total,Bloques 1+2,Bloques 3+4\n";
     csvContent += `TRperdidas,${TRperdidas.total.toFixed(2)},${TRperdidas.bloques[0].toFixed(2)},${TRperdidas.bloques[1].toFixed(2)}\n`;
     csvContent += `TRganancias,${TRganancias.total.toFixed(2)},${TRganancias.bloques[0].toFixed(2)},${TRganancias.bloques[1].toFixed(2)}\n`;
