@@ -37,10 +37,13 @@ function drawCard(deckName) {
 
     let responseTime = 0; // Inicializamos el tiempo de respuesta como 0
 
-    // Si no hay un timestamp previo (primer clic), simplemente inicializamos el proceso
+    // Si no hay un timestamp previo, asumimos que es el primer clic
     if (lastTimestamp !== null) {
         responseTime = currentTimestamp - lastTimestamp; // Calculamos el tiempo de respuesta
+    } else {
+        console.log("Primer clic detectado. No se calcula tiempo de respuesta.");
     }
+
     lastTimestamp = currentTimestamp; // Actualizamos el timestamp previo
 
     if (trialCount >= maxTrials) {
@@ -73,8 +76,23 @@ function drawCard(deckName) {
             resultSpan.style.color = 'green';
             audio.src = 'success.wav';
             audio.play();
-       
-
+        } else if (perdido > 0) {
+            resultSpan.innerHTML = `<span class="loss">Has perdido: €${perdido}</span>`;
+            resultSpan.style.color = 'red';
+            audio.src = 'fail.wav';
+            audio.play();
+        }
+    }
+
+    profit += result;
+    trialCount++;
+    results.push({ deck: deckName, result: result, profit: profit, timestamp: currentTimestamp, TR: responseTime });
+    document.getElementById('profit').innerText = profit;
+
+    if (trialCount === maxTrials) {
+        computeNetScores();
+    }
+}
 
 function calcularTRperdidasGananciasPorBloques(tipo) {
     if (results.length === 0) {
