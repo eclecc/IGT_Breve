@@ -89,40 +89,23 @@ function drawCard(deckName) {
     }
 }
 
-function calcularTRperdidasPorBloques() {
+function calcularTRperdidasGananciasPorBloques(tipo) {
+    if (results.length === 0) {
+        console.warn("No hay datos en los resultados. No se puede calcular TRperdidas/TRganancias.");
+        return { total: 0, bloques: [0, 0] };
+    }
+
     let totalResponseTime = 0, totalCount = 0;
     let bloques = [{ responseTime: 0, count: 0 }, { responseTime: 0, count: 0 }];
 
     results.forEach((record, index) => {
-        if (record.result < 0 && index < results.length - 1) {
-            const siguienteTR = results[index + 1].TR;
+        const siguienteTR = index < results.length - 1 ? results[index + 1].TR : 0;
+
+        if ((tipo === "perdidas" && record.result < 0) || (tipo === "ganancias" && record.result > 0)) {
             totalResponseTime += siguienteTR;
             totalCount++;
 
-            // Clasificar en bloques 1+2 o 3+4
-            const bloqueIndex = index < maxTrials / 2 ? 0 : 1;
-            bloques[bloqueIndex].responseTime += siguienteTR;
-            bloques[bloqueIndex].count++;
-        }
-    });
-
-    return {
-        total: totalCount > 0 ? totalResponseTime / totalCount : 0,
-        bloques: bloques.map(b => b.count > 0 ? b.responseTime / b.count : 0),
-    };
-}
-
-function calcularTRgananciasPorBloques() {
-    let totalResponseTime = 0, totalCount = 0;
-    let bloques = [{ responseTime: 0, count: 0 }, { responseTime: 0, count: 0 }];
-
-    results.forEach((record, index) => {
-        if (record.result > 0 && index < results.length - 1) {
-            const siguienteTR = results[index + 1].TR;
-            totalResponseTime += siguienteTR;
-            totalCount++;
-
-            // Clasificar en bloques 1+2 o 3+4
+            // Clasificar en bloques 1+2 (primera mitad) o 3+4 (segunda mitad)
             const bloqueIndex = index < maxTrials / 2 ? 0 : 1;
             bloques[bloqueIndex].responseTime += siguienteTR;
             bloques[bloqueIndex].count++;
@@ -199,7 +182,7 @@ function computeNetScores() {
 }
 
 
-function displayNetScores(netScores, averageTRs, totalNetScore, averageTRTotal, ultimos15NetScore, ultimos15AverageTR, ultimos10NetScore, ultimos10AverageTR) {
+function displayNetScores(netScores, averageTRs, totalNetScore, averageTRTotal, ultimos15NetScore, ultimos15AverageTR, ultimos10NetScore, ultimos10AverageTR, TRperdidas,TRganancias) {
     let message = "Net Scores for each block:\n";
     netScores.forEach((score, index) => {
         message += `Block ${index + 1}: Net Score = ${score}, Avg TR = ${averageTRs[index].toFixed(2)} ms\n`;
