@@ -89,6 +89,51 @@ function drawCard(deckName) {
     }
 }
 
+function calcularTRperdidasPorBloques() {
+    let totalResponseTime = 0, totalCount = 0;
+    let bloques = [{ responseTime: 0, count: 0 }, { responseTime: 0, count: 0 }];
+
+    results.forEach((record, index) => {
+        if (record.result < 0 && index < results.length - 1) {
+            const siguienteTR = results[index + 1].TR;
+            totalResponseTime += siguienteTR;
+            totalCount++;
+
+            // Clasificar en bloques 1+2 o 3+4
+            const bloqueIndex = index < maxTrials / 2 ? 0 : 1;
+            bloques[bloqueIndex].responseTime += siguienteTR;
+            bloques[bloqueIndex].count++;
+        }
+    });
+
+    return {
+        total: totalCount > 0 ? totalResponseTime / totalCount : 0,
+        bloques: bloques.map(b => b.count > 0 ? b.responseTime / b.count : 0),
+    };
+}
+
+function calcularTRgananciasPorBloques() {
+    let totalResponseTime = 0, totalCount = 0;
+    let bloques = [{ responseTime: 0, count: 0 }, { responseTime: 0, count: 0 }];
+
+    results.forEach((record, index) => {
+        if (record.result > 0 && index < results.length - 1) {
+            const siguienteTR = results[index + 1].TR;
+            totalResponseTime += siguienteTR;
+            totalCount++;
+
+            // Clasificar en bloques 1+2 o 3+4
+            const bloqueIndex = index < maxTrials / 2 ? 0 : 1;
+            bloques[bloqueIndex].responseTime += siguienteTR;
+            bloques[bloqueIndex].count++;
+        }
+    });
+
+    return {
+        total: totalCount > 0 ? totalResponseTime / totalCount : 0,
+        bloques: bloques.map(b => b.count > 0 ? b.responseTime / b.count : 0),
+    };
+}
 
 function computeNetScores() {
     let netScores = [];
@@ -144,9 +189,13 @@ function computeNetScores() {
     const averageTRTotal = totalTRCount > 0 ? totalTR / totalTRCount : 0;
     const ultimos15AverageTR = ultimos15Count > 0 ? ultimos15TR / ultimos15Count : 0;
     const ultimos10AverageTR = ultimos10Count > 0 ? ultimos10TR / ultimos10Count : 0;
+    // Calcular TRperdidas y TRganancias (total y por bloques)
+    const TRperdidas = calcularTRperdidasGananciasPorBloques("perdidas");
+    const TRganancias = calcularTRperdidasGananciasPorBloques("ganancias");
     
-    displayNetScores(netScores, averageTRs, totalNetScore, averageTRTotal, ultimos15NetScore, ultimos15AverageTR, ultimos10NetScore, ultimos10AverageTR);
-    return { netScores, averageTRs, totalNetScore, averageTRTotal, ultimos15NetScore, ultimos15AverageTR, ultimos10NetScore, ultimos10AverageTR };
+    displayNetScores(netScores, averageTRs, totalNetScore, averageTRTotal, ultimos15NetScore, ultimos15AverageTR, ultimos10NetScore, ultimos10AverageTR, TRperdidas,TRganancias);
+    return { netScores, averageTRs, totalNetScore, averageTRTotal, ultimos15NetScore, ultimos15AverageTR, ultimos10NetScore, ultimos10AverageTR, TRperdidas,TRganancias };
+   
 }
 
 
@@ -160,7 +209,11 @@ function displayNetScores(netScores, averageTRs, totalNetScore, averageTRTotal, 
     message += `\nTotal Net Score: ${totalNetScore}\n`;
     message += `Average TR (Total): ${averageTRTotal.toFixed(2)} ms\n`;
     message += `Beneficio final: €${profit}`;
+     // Mostrar TRperdidas
+    message += `TRperdidas:\n  Total: ${TRperdidas.total.toFixed(2)} ms\n  Bloques 1+2: ${TRperdidas.bloques[0].toFixed(2)} ms\n  Bloques 3+4: ${TRperdidas.bloques[1].toFixed(2)} ms\n`;
 
+    // Mostrar TRganancias
+    message += `TRganancias:\n  Total: ${TRganancias.total.toFixed(2)} ms\n  Bloques 1+2: ${TRganancias.bloques[0].toFixed(2)} ms\n  Bloques 3+4: ${TRganancias.bloques[1].toFixed(2)} ms\n`;
     setTimeout(() => alert(message), 100);
 }
 
@@ -169,6 +222,7 @@ function downloadCSV() {
     let csvContent = "data:text/csv;charset=utf-8,";
 
     // Llama a computeNetScores para obtener todos los datos necesarios
+    const { TRperdidas, TRganancias } = computeNetScores();
     const { netScores, averageTRs, totalNetScore, averageTRTotal, ultimos15NetScore, ultimos15AverageTR, ultimos10NetScore, ultimos10AverageTR } = computeNetScores();
 
     // Agregar encabezados y datos de resultados
@@ -193,7 +247,9 @@ function downloadCSV() {
     csvContent += "Beneficio Final (€)," + profit + "\n";
     csvContent += "\nSubtotal (últimos 15)," + ultimos15NetScore + "," + ultimos15AverageTR.toFixed(2) + " ms\n";
     csvContent += "Subtotal (últimos 10)," + ultimos10NetScore + "," + ultimos10AverageTR.toFixed(2) + " ms\n";
-
+    csvContent += "Índice,Total,Bloques 1+2,Bloques 3+4\n";
+    csvContent += `TRperdidas,${TRperdidas.total.toFixed(2)},${TRperdidas.bloques[0].toFixed(2)},${TRperdidas.bloques[1].toFixed(2)}\n`;
+    csvContent += `TRganancias,${TRganancias.total.toFixed(2)},${TRganancias.bloques[0].toFixed(2)},${TRganancias.bloques[1].toFixed(2)}\n`;
     // Codificar y descargar el archivo
     let encodedUri = encodeURI(csvContent);
     let link = document.createElement("a");
