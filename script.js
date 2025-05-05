@@ -53,7 +53,7 @@ function drawCard(deckName) {
     }
     
     if (typeof result === "undefined") {
-        alert(`!La baraja ${deckName} está vacía!`);
+        alert(`¡La baraja ${deckName} está vacía!`);
         return;
     } else {
         // Calculamos valores desglosados
@@ -62,16 +62,20 @@ function drawCard(deckName) {
 
         // Mostramos los resultados desglosados
         let resultSpan = document.getElementById('resultValue');
-        
-        if (ganado > 0 && perdido > 0) {
-            resultSpan.innerHTML = `
-                <span class="gain">Ganado: €${ganado}</span> 
-                <span class="loss">Perdido: €${perdido}</span>
-            `;
-        } else if (ganado > 0) {
-            resultSpan.innerHTML = `<span class="gain">Ganado: €${ganado}</span>`;
+        let audio = new Audio(); // Crear un objeto de audio
+
+        if (ganado > 0) {
+            // Ganancia
+            resultSpan.innerHTML = `<span class="gain">Has ganado: €${ganado}</span>`;
+            resultSpan.style.color = 'green'; // Cambiar color a verde
+            audio.src = 'success.wav'; // Archivo de sonido para ganancia
+            audio.play(); // Reproducir sonido
         } else if (perdido > 0) {
-            resultSpan.innerHTML = `<span class="loss">Perdido: €${perdido}</span>`;
+            // Pérdida
+            resultSpan.innerHTML = `<span class="loss">Has perdido: €${perdido}</span>`;
+            resultSpan.style.color = 'red'; // Cambiar color a rojo
+            audio.src = 'fail.wav'; // Archivo de sonido para pérdida
+            audio.play(); // Reproducir sonido
         }
     }
 
